@@ -1,0 +1,69 @@
+AI Startup Builder - Main Code Overview
+
+Main file: server.js
+--------------------
+This is the active backend entrypoint. It includes:
+- server configuration and startup logs
+- JWT authentication
+- JSON database read/write with optional PostgreSQL mirror/primary mode
+- SaaS account logic (plans, credits, lite mode fallback)
+- project CRUD
+- AI generation for structure/code/website preview
+- ZIP export pipeline
+
+AI architecture (xAI only)
+--------------------------
+The project now uses only official xAI API.
+
+Core environment variables:
+- XAI_API_KEY
+- XAI_API_BASE
+- XAI_MODEL
+- XAI_GROK_MODELS
+- XAI_MODELS_TIMEOUT_MS
+- XAI_REQUEST_TIMEOUT_MS
+
+AI flow:
+1. On server boot, available models are fetched from xAI /models.
+2. Model list is prioritized with XAI_MODEL as default.
+3. AI calls use xAI /responses endpoint.
+4. On provider errors/timeouts/empty output, local template fallback is used.
+
+Key AI functions in server.js:
+- loadXaiModels(): fetches available models and connection state
+- getXaiModels(): returns prioritized model list
+- tryXaiGrokRequest(): universal request wrapper to xAI
+- tryXaiGrokStructure(): generates product structure JSON
+- tryXaiGrokCode(): generates frontend/backend/database code blocks
+- tryXaiGrokDesign(): generates premium HTML preview
+
+Error handling and timeouts:
+- model loading timeout via XAI_MODELS_TIMEOUT_MS
+- request timeout via XAI_REQUEST_TIMEOUT_MS
+- robust fallback when AI output is invalid or unavailable
+- startup status includes AI, model, API and connection state
+
+Data and business logic
+-----------------------
+Storage:
+- db.json is default storage
+- PostgreSQL mirror/primary mode available through src/postgres-mirror.js
+
+Account logic:
+- plan limits and credits
+- credits consumption per action
+- lite mode auto-switch when credits end
+- subscription checkout and billing history
+
+Export and preview:
+- project export as ZIP stream
+- generated HTML preview saved per project
+
+Supporting files
+----------------
+- src/config.js: shared configuration for modular backend components
+- src/database.js, src/middleware.js, src/utils.js: utilities for optimized backend mode
+- README_OPTIMIZED.md: up-to-date setup and architecture notes
+- QUICKSTART.md: fast local start
+
+This overview reflects xAI-only AI integration with no legacy AI SDK dependency.
