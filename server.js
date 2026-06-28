@@ -4439,6 +4439,21 @@ app.delete('/api/projects', auth, (req, res) => {
   res.status(404).json({ error: 'Use DELETE /api/projects/all to remove all projects' });
 });
 
+const CLIENT_BUILD_PATH = path.join(__dirname, 'client', 'build');
+const CLIENT_INDEX_PATH = path.join(CLIENT_BUILD_PATH, 'index.html');
+
+if (process.env.NODE_ENV === 'production' && fs.existsSync(CLIENT_INDEX_PATH)) {
+  app.use(express.static(CLIENT_BUILD_PATH));
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+
+    return res.sendFile(CLIENT_INDEX_PATH);
+  });
+}
+
 app.listen(PORT, async () => {
   const xaiBoot = await loadXaiModels();
 

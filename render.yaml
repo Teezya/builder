@@ -1,0 +1,19 @@
+services:
+  - type: web
+    runtime: node
+    name: ai-startup-builder
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npm --prefix client install && npm --prefix client run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: XAI_API_KEY
+        sync: false
+      - key: XAI_API_BASE
+        value: https://api.x.ai/v1
+      - key: XAI_MODEL
+        value: grok-4.3
